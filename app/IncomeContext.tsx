@@ -42,6 +42,8 @@ type IncomeContextType = {
   allocationPercentages: AllocationPercentages;
   setAllocationPercentages: React.Dispatch<React.SetStateAction<AllocationPercentages>>;
   savedData: AllocationTotals;
+  savedTotalBusinessIncome: number;
+  savedTotalSalaryIncome: number;
   saveCurrentData: () => void;
   resetData: () => void;
   addBusinessIncome: (income: number) => void;
@@ -70,57 +72,62 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
     business: { tithe: 0, expenses: 0, educationFund: 0, businessFund: 0, funFund: 0, wealthFund: 0 },
     salary: { tithes: 0, expenses: 0, saving: 0, educationFund: 0, funFund: 0, wealthFund: 0 },
   });
+  const [savedTotalBusinessIncome, setSavedTotalBusinessIncome] = useState<number>(0);
+  const [savedTotalSalaryIncome, setSavedTotalSalaryIncome] = useState<number>(0);
   const [isBusinessDataSaved, setIsBusinessDataSaved] = useState(false);
   const [isSalaryDataSaved, setIsSalaryDataSaved] = useState(false);
 
   const saveCurrentData = () => {
     setSavedData((prevSavedData) => ({
       business: {
-        tithe: !isBusinessDataSaved && allocationTotals.business.tithe > 0
-          ? prevSavedData.business.tithe + allocationTotals.business.tithe
+        tithe: !isBusinessDataSaved && totalBusinessIncome > 0
+          ? prevSavedData.business.tithe + totalBusinessIncome * (allocationPercentages.business.tithe / 100)
           : prevSavedData.business.tithe,
-        expenses: !isBusinessDataSaved && allocationTotals.business.expenses > 0
-          ? prevSavedData.business.expenses + allocationTotals.business.expenses
+        expenses: !isBusinessDataSaved && totalBusinessIncome > 0
+          ? prevSavedData.business.expenses + totalBusinessIncome * (allocationPercentages.business.expenses / 100)
           : prevSavedData.business.expenses,
-        educationFund: !isBusinessDataSaved && allocationTotals.business.educationFund > 0
-          ? prevSavedData.business.educationFund + allocationTotals.business.educationFund
+        educationFund: !isBusinessDataSaved && totalBusinessIncome > 0
+          ? prevSavedData.business.educationFund + totalBusinessIncome * (allocationPercentages.business.educationFund / 100)
           : prevSavedData.business.educationFund,
-        businessFund: !isBusinessDataSaved && allocationTotals.business.businessFund > 0
-          ? prevSavedData.business.businessFund + allocationTotals.business.businessFund
+        businessFund: !isBusinessDataSaved && totalBusinessIncome > 0
+          ? prevSavedData.business.businessFund + totalBusinessIncome * (allocationPercentages.business.businessFund / 100)
           : prevSavedData.business.businessFund,
-        funFund: !isBusinessDataSaved && allocationTotals.business.funFund > 0
-          ? prevSavedData.business.funFund + allocationTotals.business.funFund
+        funFund: !isBusinessDataSaved && totalBusinessIncome > 0
+          ? prevSavedData.business.funFund + totalBusinessIncome * (allocationPercentages.business.funFund / 100)
           : prevSavedData.business.funFund,
-        wealthFund: !isBusinessDataSaved && allocationTotals.business.wealthFund > 0
-          ? prevSavedData.business.wealthFund + allocationTotals.business.wealthFund
+        wealthFund: !isBusinessDataSaved && totalBusinessIncome > 0
+          ? prevSavedData.business.wealthFund + totalBusinessIncome * (allocationPercentages.business.wealthFund / 100)
           : prevSavedData.business.wealthFund,
       },
       salary: {
-        tithes: !isSalaryDataSaved && allocationTotals.salary.tithes > 0
-          ? prevSavedData.salary.tithes + allocationTotals.salary.tithes
+        tithes: !isSalaryDataSaved && totalSalaryIncome > 0
+          ? prevSavedData.salary.tithes + totalSalaryIncome * (allocationPercentages.salary.tithes / 100)
           : prevSavedData.salary.tithes,
-        expenses: !isSalaryDataSaved && allocationTotals.salary.expenses > 0
-          ? prevSavedData.salary.expenses + allocationTotals.salary.expenses
+        expenses: !isSalaryDataSaved && totalSalaryIncome > 0
+          ? prevSavedData.salary.expenses + totalSalaryIncome * (allocationPercentages.salary.expenses / 100)
           : prevSavedData.salary.expenses,
-        saving: !isSalaryDataSaved && allocationTotals.salary.saving > 0
-          ? prevSavedData.salary.saving + allocationTotals.salary.saving
+        saving: !isSalaryDataSaved && totalSalaryIncome > 0
+          ? prevSavedData.salary.saving + totalSalaryIncome * (allocationPercentages.salary.saving / 100)
           : prevSavedData.salary.saving,
-        educationFund: !isSalaryDataSaved && allocationTotals.salary.educationFund > 0
-          ? prevSavedData.salary.educationFund + allocationTotals.salary.educationFund
+        educationFund: !isSalaryDataSaved && totalSalaryIncome > 0
+          ? prevSavedData.salary.educationFund + totalSalaryIncome * (allocationPercentages.salary.educationFund / 100)
           : prevSavedData.salary.educationFund,
-        funFund: !isSalaryDataSaved && allocationTotals.salary.funFund > 0
-          ? prevSavedData.salary.funFund + allocationTotals.salary.funFund
+        funFund: !isSalaryDataSaved && totalSalaryIncome > 0
+          ? prevSavedData.salary.funFund + totalSalaryIncome * (allocationPercentages.salary.funFund / 100)
           : prevSavedData.salary.funFund,
-        wealthFund: !isSalaryDataSaved && allocationTotals.salary.wealthFund > 0
-          ? prevSavedData.salary.wealthFund + allocationTotals.salary.wealthFund
+        wealthFund: !isSalaryDataSaved && totalSalaryIncome > 0
+          ? prevSavedData.salary.wealthFund + totalSalaryIncome * (allocationPercentages.salary.wealthFund / 100)
           : prevSavedData.salary.wealthFund,
       },
     }));
 
-    if (allocationTotals.business.tithe > 0 || allocationTotals.business.expenses > 0) {
+    if (!isBusinessDataSaved && totalBusinessIncome > 0) {
+      setSavedTotalBusinessIncome((prev) => prev + totalBusinessIncome);
       setIsBusinessDataSaved(true);
     }
-    if (allocationTotals.salary.tithes > 0 || allocationTotals.salary.expenses > 0) {
+
+    if (!isSalaryDataSaved && totalSalaryIncome > 0) {
+      setSavedTotalSalaryIncome((prev) => prev + totalSalaryIncome);
       setIsSalaryDataSaved(true);
     }
   };
@@ -233,6 +240,8 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
         allocationPercentages,
         setAllocationPercentages,
         savedData,
+        savedTotalBusinessIncome,
+        savedTotalSalaryIncome,
         saveCurrentData,
         resetData,
         addBusinessIncome,

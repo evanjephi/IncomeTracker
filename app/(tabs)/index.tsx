@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { sharedStyles } from '../../components/sharedStyles';
 import AllocationGraph from '../../components/AllocationGraph';
+import SavedDataPieChart from '../components/SavedDataPieChart';
 
 const Index = () => {
   const incomeContext = useContext(IncomeContext);
@@ -13,7 +14,7 @@ const Index = () => {
     throw new Error('Index must be used within an IncomeProvider');
   }
 
-  const { totalBusinessIncome, totalSalaryIncome, allocationTotals, allocationPercentages, savedData, saveCurrentData } = incomeContext;
+  const { totalBusinessIncome, totalSalaryIncome, allocationTotals, allocationPercentages, savedData, saveCurrentData, savedTotalBusinessIncome, savedTotalSalaryIncome } = incomeContext;
   const totalIncome = totalBusinessIncome + totalSalaryIncome;
   const combinedAllocations = {
     tithes: allocationTotals.business.tithe + allocationTotals.salary.tithes,
@@ -23,6 +24,16 @@ const Index = () => {
     businessFund: allocationTotals.business.businessFund,
     funFund: allocationTotals.business.funFund + allocationTotals.salary.funFund,
     wealthFund: allocationTotals.business.wealthFund + allocationTotals.salary.wealthFund,
+  };
+
+  const combinedSavedAllocations = {
+    tithes: savedData.business.tithe + savedData.salary.tithes,
+    expenses: savedData.business.expenses + savedData.salary.expenses,
+    saving: savedData.salary.saving,
+    businessFund: savedData.business.businessFund,
+    educationFund: savedData.business.educationFund + savedData.salary.educationFund,
+    funFund: savedData.business.funFund + savedData.salary.funFund,
+    wealthFund: savedData.business.wealthFund + savedData.salary.wealthFund,
   };
 
   const [isBusinessVisible, setIsBusinessVisible] = useState(false);
@@ -58,61 +69,7 @@ const Index = () => {
         <ThemedText style={[sharedStyles.total]}>Business Income: ${totalBusinessIncome.toFixed(2)}</ThemedText>
         <ThemedText style={[sharedStyles.total]}>Salary Income: ${totalSalaryIncome.toFixed(2)}</ThemedText>
         <ThemedText style={[sharedStyles.total, { fontWeight: 'bold' }]}>Overall Total Income: ${totalIncome.toFixed(2)}</ThemedText>
-        <TouchableOpacity onPress={saveCurrentData} style={[sharedStyles.button]}>
-          <ThemedText style={[sharedStyles.buttonText]}>Save All Data</ThemedText>
-        </TouchableOpacity>
-        
-        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Business Income Data:</ThemedText>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Tithe:</ThemedText>
-          <ThemedText>${savedData.business.tithe.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Expenses:</ThemedText>
-          <ThemedText>${savedData.business.expenses.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Education Fund:</ThemedText>
-          <ThemedText>${savedData.business.educationFund.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Business Fund:</ThemedText>
-          <ThemedText>${savedData.business.businessFund.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Fun Fund:</ThemedText>
-          <ThemedText>${savedData.business.funFund.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Wealth Fund:</ThemedText>
-          <ThemedText>${savedData.business.wealthFund.toFixed(2)}</ThemedText>
-        </ThemedView>
 
-        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Salary Income Data:</ThemedText> 
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Tithe:</ThemedText>
-          <ThemedText>${savedData.salary.tithes.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Expenses:</ThemedText>
-          <ThemedText>${savedData.salary.expenses.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Saving:</ThemedText>
-          <ThemedText>${savedData.salary.saving.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Education Fund:</ThemedText>
-          <ThemedText>${savedData.salary.educationFund.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Fun Fund:</ThemedText>
-          <ThemedText>${savedData.salary.funFund.toFixed(2)}</ThemedText>
-        </ThemedView>
-        <ThemedView style={sharedStyles.allocationRow}>
-          <ThemedText>Wealth Fund:</ThemedText>
-          <ThemedText>${savedData.salary.wealthFund.toFixed(2)}</ThemedText>
-        </ThemedView>
         <TouchableOpacity onPress={() => toggleVisibility('business')} style={[sharedStyles.collapsibleHeader]}>
           <ThemedText style={[sharedStyles.collapsibleHeaderText]}>Business Income Allocations</ThemedText>
         </TouchableOpacity>
@@ -218,6 +175,51 @@ const Index = () => {
             <AllocationGraph data={combinedAllocationData} />
           </ThemedView>
         )}
+
+        <ThemedView style={sharedStyles.allocationRow}>
+          <ThemedText>Total Over All Business Income:</ThemedText>
+          <ThemedText>${savedTotalBusinessIncome.toFixed(2)}</ThemedText>
+        </ThemedView>
+        <ThemedView style={sharedStyles.allocationRow}>
+          <ThemedText>Total Over All Salary Income:</ThemedText>
+          <ThemedText>${savedTotalSalaryIncome.toFixed(2)}</ThemedText>
+        </ThemedView>
+
+        <TouchableOpacity
+          onPress={saveCurrentData}
+          style={[sharedStyles.button, { backgroundColor: '#006400' }]} // Dark green color
+        >
+          <ThemedText style={[sharedStyles.buttonText]}>Save All Data</ThemedText>
+        </TouchableOpacity>
+
+        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Business Income Data:</ThemedText>
+        <SavedDataPieChart
+          title="Business Income"
+          data={{
+            tithes: savedData.business.tithe || 0,
+            expenses: savedData.business.expenses || 0,
+            educationFund: savedData.business.educationFund || 0,
+            businessFund: savedData.business.businessFund || 0,
+            funFund: savedData.business.funFund || 0,
+            wealthFund: savedData.business.wealthFund || 0,
+          }}
+        />
+
+        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Salary Income Data:</ThemedText> 
+        <SavedDataPieChart
+          title="Salary Income"
+          data={{
+            tithes: savedData.salary.tithes,
+            expenses: savedData.salary.expenses,
+            saving: savedData.salary.saving,
+            educationFund: savedData.salary.educationFund,
+            funFund: savedData.salary.funFund,
+            wealthFund: savedData.salary.wealthFund,
+          }}
+        />
+
+        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Combined Allocations:</ThemedText>
+        <SavedDataPieChart title="Combined Income" data={combinedSavedAllocations} />
       </ThemedView>
     </ScrollView>
   );
