@@ -28,20 +28,23 @@ const SavedDataPieChart: React.FC<SavedDataPieChartProps> = ({ title, data }) =>
       : []),
     { name: 'Fun Fund', amount: data.funFund, color: '#FF9F40', legendFontColor: '#7F7F7F', legendFontSize: 12 },
     { name: 'Wealth Fund', amount: data.wealthFund, color: '#FFCD56', legendFontColor: '#7F7F7F', legendFontSize: 12 },
-  ];
+  ].map((item) => ({
+    ...item,
+    amount: parseFloat(item.amount.toFixed(2)), // Format to 2 decimal digits
+  }));
 
   return (
     <>
       <PieChart
         data={chartData}
-        width={Dimensions.get('window').width - 40}
-        height={220}
+        width={Dimensions.get('window').width - 80} // Make the pie chart smaller
+        height={180} // Reduce the height of the pie chart
         chartConfig={{
           color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
         }}
         accessor="amount"
         backgroundColor="transparent"
-        paddingLeft="15"
+        paddingLeft="1"
         absolute
       />
     </>
