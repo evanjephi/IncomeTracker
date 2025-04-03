@@ -1,3 +1,4 @@
+//Allocation Graph to visualize income data
 import React from 'react';
 import { BarChart } from 'react-native-chart-kit';
 import { Dimensions, View } from 'react-native';
