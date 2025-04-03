@@ -62,12 +62,18 @@ export const sharedStyles = StyleSheet.create({
     padding: 13,
     marginVertical: 5,
     borderRadius: 8,
-    backgroundColor: '#000000', // Black background color for content
+    backgroundColor: '#000000', // Black background color
   },
   allocationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 5,
-    backgroundColor: '#000000', // Black background color for content
+    backgroundColor: '#000000', // Black background color
+  },
+  contentBackground: {
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: '#000000', // Black background color
+    marginBottom: 10,
   },
 });
