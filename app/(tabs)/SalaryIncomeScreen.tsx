@@ -51,7 +51,7 @@ export default function SalaryIncomeScreen() {
   };
 
   return (
-    <ThemedView style={sharedStyles.container}>
+    <ThemedView style={[sharedStyles.container, { backgroundColor: 'black' }]}>
       <ThemedText style={sharedStyles.header}>Salary Income</ThemedText>
 
       <TextInput
