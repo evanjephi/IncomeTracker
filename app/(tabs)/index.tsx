@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { ScrollView, TouchableOpacity, FlatList, View, Dimensions } from 'react-native';
+import { ScrollView, TouchableOpacity, FlatList, View, Dimensions, Alert } from 'react-native';
+import * as Print from 'expo-print';
 import { IncomeContext } from '../IncomeContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -14,7 +15,7 @@ const Index = () => {
     throw new Error('Index must be used within an IncomeProvider');
   }
 
-  const { totalBusinessIncome, totalSalaryIncome, allocationTotals, allocationPercentages, savedData, saveCurrentData, savedTotalBusinessIncome, savedTotalSalaryIncome } = incomeContext;
+  const { totalBusinessIncome, totalSalaryIncome, allocationTotals, allocationPercentages, savedData, saveCurrentData, savedTotalBusinessIncome, savedTotalSalaryIncome, resetSavedData } = incomeContext;
   const totalIncome = totalBusinessIncome + totalSalaryIncome;
   const combinedAllocations = {
     tithes: allocationTotals.business.tithe + allocationTotals.salary.tithes,
@@ -101,6 +102,71 @@ const Index = () => {
       <SavedDataPieChart title={item.title} data={item.data} />
     </View>
   );
+
+  const handleResetSavedData = () => {
+    Alert.alert(
+      'Reset Saved Data',
+      'Are you sure you want to reset all saved data? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: () => resetSavedData(),
+        },
+      ]
+    );
+  };
+
+  const generatePDF = async () => {
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { text-align: center; color: #333; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f4f4f4; }
+          </style>
+        </head>
+        <body>
+          <h1>Saved Data Report</h1>
+          <h2>Business Income</h2>
+          <table>
+            <tr><th>Category</th><th>Amount</th></tr>
+            <tr><td>Tithe</td><td>${savedData.business.tithe.toFixed(2)}</td></tr>
+            <tr><td>Expenses</td><td>${savedData.business.expenses.toFixed(2)}</td></tr>
+            <tr><td>Education Fund</td><td>${savedData.business.educationFund.toFixed(2)}</td></tr>
+            <tr><td>Business Fund</td><td>${savedData.business.businessFund.toFixed(2)}</td></tr>
+            <tr><td>Fun Fund</td><td>${savedData.business.funFund.toFixed(2)}</td></tr>
+            <tr><td>Wealth Fund</td><td>${savedData.business.wealthFund.toFixed(2)}</td></tr>
+          </table>
+          <h2>Salary Income</h2>
+          <table>
+            <tr><th>Category</th><th>Amount</th></tr>
+            <tr><td>Tithe</td><td>${savedData.salary.tithes.toFixed(2)}</td></tr>
+            <tr><td>Expenses</td><td>${savedData.salary.expenses.toFixed(2)}</td></tr>
+            <tr><td>Saving</td><td>${savedData.salary.saving.toFixed(2)}</td></tr>
+            <tr><td>Education Fund</td><td>${savedData.salary.educationFund.toFixed(2)}</td></tr>
+            <tr><td>Fun Fund</td><td>${savedData.salary.funFund.toFixed(2)}</td></tr>
+            <tr><td>Wealth Fund</td><td>${savedData.salary.wealthFund.toFixed(2)}</td></tr>
+          </table>
+          <h2>Total Saved Income</h2>
+          <p>Business Income: $${savedTotalBusinessIncome.toFixed(2)}</p>
+          <p>Salary Income: $${savedTotalSalaryIncome.toFixed(2)}</p>
+        </body>
+      </html>
+    `;
+
+    try {
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      Alert.alert('PDF Generated', `PDF saved to: ${uri}`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      Alert.alert('Error', 'Failed to generate PDF.');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -241,6 +307,20 @@ const Index = () => {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
         />
+
+        <TouchableOpacity
+          onPress={generatePDF}
+          style={[sharedStyles.button, { backgroundColor: '#0075be' }]} // Blue color for PDF button
+        >
+          <ThemedText style={[sharedStyles.buttonText]}>Generate PDF</ThemedText>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleResetSavedData}
+          style={[sharedStyles.button, { backgroundColor: '#FF0000' }]} // Red color for reset button
+        >
+          <ThemedText style={[sharedStyles.buttonText]}>Reset Saved Data</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
     </ScrollView>
   );
