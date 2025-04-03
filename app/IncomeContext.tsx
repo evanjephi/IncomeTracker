@@ -48,6 +48,7 @@ type IncomeContextType = {
   resetData: () => void;
   addBusinessIncome: (income: number) => void;
   addSalaryIncome: (income: number) => void;
+  resetSavedData: () => void;
 };
 
 // Initialize the context with undefined to enforce provider usage
@@ -79,31 +80,46 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
   const [isBusinessDataSaved, setIsBusinessDataSaved] = useState(false);
   const [isSalaryDataSaved, setIsSalaryDataSaved] = useState(false);
 
-  const saveCurrentData = () => {
-    setSavedData((prevSavedData) => ({
+  const saveCurrentData = async () => {
+    const updatedSavedData = {
       business: {
-        tithe: prevSavedData.business.tithe + newBusinessIncome * (allocationPercentages.business.tithe / 100),
-        expenses: prevSavedData.business.expenses + newBusinessIncome * (allocationPercentages.business.expenses / 100),
-        educationFund: prevSavedData.business.educationFund + newBusinessIncome * (allocationPercentages.business.educationFund / 100),
-        businessFund: prevSavedData.business.businessFund + newBusinessIncome * (allocationPercentages.business.businessFund / 100),
-        funFund: prevSavedData.business.funFund + newBusinessIncome * (allocationPercentages.business.funFund / 100),
-        wealthFund: prevSavedData.business.wealthFund + newBusinessIncome * (allocationPercentages.business.wealthFund / 100),
+        tithe: savedData.business.tithe + newBusinessIncome * (allocationPercentages.business.tithe / 100),
+        expenses: savedData.business.expenses + newBusinessIncome * (allocationPercentages.business.expenses / 100),
+        educationFund: savedData.business.educationFund + newBusinessIncome * (allocationPercentages.business.educationFund / 100),
+        businessFund: savedData.business.businessFund + newBusinessIncome * (allocationPercentages.business.businessFund / 100),
+        funFund: savedData.business.funFund + newBusinessIncome * (allocationPercentages.business.funFund / 100),
+        wealthFund: savedData.business.wealthFund + newBusinessIncome * (allocationPercentages.business.wealthFund / 100),
       },
       salary: {
-        tithes: prevSavedData.salary.tithes + newSalaryIncome * (allocationPercentages.salary.tithes / 100),
-        expenses: prevSavedData.salary.expenses + newSalaryIncome * (allocationPercentages.salary.expenses / 100),
-        saving: prevSavedData.salary.saving + newSalaryIncome * (allocationPercentages.salary.saving / 100),
-        educationFund: prevSavedData.salary.educationFund + newSalaryIncome * (allocationPercentages.salary.educationFund / 100),
-        funFund: prevSavedData.salary.funFund + newSalaryIncome * (allocationPercentages.salary.funFund / 100),
-        wealthFund: prevSavedData.salary.wealthFund + newSalaryIncome * (allocationPercentages.salary.wealthFund / 100),
+        tithes: savedData.salary.tithes + newSalaryIncome * (allocationPercentages.salary.tithes / 100),
+        expenses: savedData.salary.expenses + newSalaryIncome * (allocationPercentages.salary.expenses / 100),
+        saving: savedData.salary.saving + newSalaryIncome * (allocationPercentages.salary.saving / 100),
+        educationFund: savedData.salary.educationFund + newSalaryIncome * (allocationPercentages.salary.educationFund / 100),
+        funFund: savedData.salary.funFund + newSalaryIncome * (allocationPercentages.salary.funFund / 100),
+        wealthFund: savedData.salary.wealthFund + newSalaryIncome * (allocationPercentages.salary.wealthFund / 100),
       },
-    }));
+    };
 
-    setSavedTotalBusinessIncome((prev) => prev + newBusinessIncome); // Add only the new business income
-    setSavedTotalSalaryIncome((prev) => prev + newSalaryIncome); // Add only the new salary income
+    const updatedSavedTotalBusinessIncome = savedTotalBusinessIncome + newBusinessIncome;
+    const updatedSavedTotalSalaryIncome = savedTotalSalaryIncome + newSalaryIncome;
 
-    setNewBusinessIncome(0); // Reset new business income
-    setNewSalaryIncome(0); // Reset new salary income
+    // Update state
+    setSavedData(updatedSavedData);
+    setSavedTotalBusinessIncome(updatedSavedTotalBusinessIncome);
+    setSavedTotalSalaryIncome(updatedSavedTotalSalaryIncome);
+
+    // Reset new income trackers
+    setNewBusinessIncome(0);
+    setNewSalaryIncome(0);
+
+    try {
+      // Save to AsyncStorage
+      await AsyncStorage.setItem('savedData', JSON.stringify(updatedSavedData));
+      await AsyncStorage.setItem('savedTotalBusinessIncome', updatedSavedTotalBusinessIncome.toString());
+      await AsyncStorage.setItem('savedTotalSalaryIncome', updatedSavedTotalSalaryIncome.toString());
+    } catch (error) {
+      console.error('Error saving data to AsyncStorage:', error);
+    }
   };
 
   const addBusinessIncome = (income: number) => {
@@ -151,6 +167,25 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
     setIsSalaryDataSaved(false); // Allow saving new data after reset
   };
 
+  const resetSavedData = async () => {
+    try {
+      // Clear saved data from AsyncStorage
+      await AsyncStorage.removeItem('savedData');
+      await AsyncStorage.removeItem('savedTotalBusinessIncome');
+      await AsyncStorage.removeItem('savedTotalSalaryIncome');
+
+      // Reset state
+      setSavedData({
+        business: { tithe: 0, expenses: 0, educationFund: 0, businessFund: 0, funFund: 0, wealthFund: 0 },
+        salary: { tithes: 0, expenses: 0, saving: 0, educationFund: 0, funFund: 0, wealthFund: 0 },
+      });
+      setSavedTotalBusinessIncome(0);
+      setSavedTotalSalaryIncome(0);
+    } catch (error) {
+      console.error('Error resetting saved data:', error);
+    }
+  };
+
   // Load data from AsyncStorage on app startup
   useEffect(() => {
     const loadData = async () => {
@@ -190,6 +225,30 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const savedDataString = await AsyncStorage.getItem('savedData');
+        const savedBusinessIncomeString = await AsyncStorage.getItem('savedTotalBusinessIncome');
+        const savedSalaryIncomeString = await AsyncStorage.getItem('savedTotalSalaryIncome');
+
+        if (savedDataString) {
+          setSavedData(JSON.parse(savedDataString));
+        }
+        if (savedBusinessIncomeString) {
+          setSavedTotalBusinessIncome(parseFloat(savedBusinessIncomeString));
+        }
+        if (savedSalaryIncomeString) {
+          setSavedTotalSalaryIncome(parseFloat(savedSalaryIncomeString));
+        }
+      } catch (error) {
+        console.error('Error loading data from AsyncStorage:', error);
+      }
+    };
+
+    loadSavedData();
+  }, []);
+
   // Save data to AsyncStorage whenever it changes
   useEffect(() => {
     const saveData = async () => {
@@ -222,6 +281,7 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
         resetData,
         addBusinessIncome,
         addSalaryIncome,
+        resetSavedData,
       }}
     >
       {children}
