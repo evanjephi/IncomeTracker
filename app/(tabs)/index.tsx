@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity, FlatList, View, Dimensions } from 'react-native';
 import { IncomeContext } from '../IncomeContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -60,6 +60,47 @@ const Index = () => {
       combinedAllocations.wealthFund,
     ],
   };
+
+  const pieChartData = [
+    {
+      title: 'Business Income Saved Data',
+      data: {
+        tithes: savedData.business.tithe,
+        expenses: savedData.business.expenses,
+        educationFund: savedData.business.educationFund,
+        businessFund: savedData.business.businessFund,
+        funFund: savedData.business.funFund,
+        wealthFund: savedData.business.wealthFund,
+      },
+    },
+    {
+      title: 'Salary Income Saved Data',
+      data: {
+        tithes: savedData.salary.tithes,
+        expenses: savedData.salary.expenses,
+        saving: savedData.salary.saving,
+        educationFund: savedData.salary.educationFund,
+        funFund: savedData.salary.funFund,
+        wealthFund: savedData.salary.wealthFund,
+      },
+    },
+    {
+      title: 'Combined Saved Data',
+      data: combinedSavedAllocations,
+    },
+  ];
+
+  const renderPieChart = ({ item, index }: { item: { title: string; data: any }; index: number }) => (
+    <View
+      style={{
+        width: Dimensions.get('window').width,
+        paddingTop: 20,
+      }}
+    >
+      <ThemedText style={[sharedStyles.subHeader]}>{item.title}</ThemedText>
+      <SavedDataPieChart title={item.title} data={item.data} />
+    </View>
+  );
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -192,34 +233,14 @@ const Index = () => {
           <ThemedText style={[sharedStyles.buttonText]}>Save All Data</ThemedText>
         </TouchableOpacity>
 
-        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Business Income Data:</ThemedText>
-        <SavedDataPieChart
-          title="Business Income"
-          data={{
-            tithes: savedData.business.tithe || 0,
-            expenses: savedData.business.expenses || 0,
-            educationFund: savedData.business.educationFund || 0,
-            businessFund: savedData.business.businessFund || 0,
-            funFund: savedData.business.funFund || 0,
-            wealthFund: savedData.business.wealthFund || 0,
-          }}
+        <FlatList
+          data={pieChartData}
+          renderItem={renderPieChart}
+          keyExtractor={(item, index) => index.toString()}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
         />
-
-        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Salary Income Data:</ThemedText> 
-        <SavedDataPieChart
-          title="Salary Income"
-          data={{
-            tithes: savedData.salary.tithes,
-            expenses: savedData.salary.expenses,
-            saving: savedData.salary.saving,
-            educationFund: savedData.salary.educationFund,
-            funFund: savedData.salary.funFund,
-            wealthFund: savedData.salary.wealthFund,
-          }}
-        />
-
-        <ThemedText style={[sharedStyles.subHeader]}>Uptodate Combined Allocations:</ThemedText>
-        <SavedDataPieChart title="Combined Income" data={combinedSavedAllocations} />
       </ThemedView>
     </ScrollView>
   );
