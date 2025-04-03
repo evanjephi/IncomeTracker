@@ -60,6 +60,8 @@ type IncomeProviderProps = {
 export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
   const [totalBusinessIncome, setTotalBusinessIncome] = useState<number>(0);
   const [totalSalaryIncome, setTotalSalaryIncome] = useState<number>(0);
+  const [newBusinessIncome, setNewBusinessIncome] = useState<number>(0); // Track new business income
+  const [newSalaryIncome, setNewSalaryIncome] = useState<number>(0); // Track new salary income
   const [allocationTotals, setAllocationTotals] = useState<AllocationTotals>({
     business: { tithe: 0, expenses: 0, educationFund: 0, businessFund: 0, funFund: 0, wealthFund: 0 },
     salary: { tithes: 0, expenses: 0, saving: 0, educationFund: 0, funFund: 0, wealthFund: 0 },
@@ -80,60 +82,33 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
   const saveCurrentData = () => {
     setSavedData((prevSavedData) => ({
       business: {
-        tithe: !isBusinessDataSaved && totalBusinessIncome > 0
-          ? prevSavedData.business.tithe + totalBusinessIncome * (allocationPercentages.business.tithe / 100)
-          : prevSavedData.business.tithe,
-        expenses: !isBusinessDataSaved && totalBusinessIncome > 0
-          ? prevSavedData.business.expenses + totalBusinessIncome * (allocationPercentages.business.expenses / 100)
-          : prevSavedData.business.expenses,
-        educationFund: !isBusinessDataSaved && totalBusinessIncome > 0
-          ? prevSavedData.business.educationFund + totalBusinessIncome * (allocationPercentages.business.educationFund / 100)
-          : prevSavedData.business.educationFund,
-        businessFund: !isBusinessDataSaved && totalBusinessIncome > 0
-          ? prevSavedData.business.businessFund + totalBusinessIncome * (allocationPercentages.business.businessFund / 100)
-          : prevSavedData.business.businessFund,
-        funFund: !isBusinessDataSaved && totalBusinessIncome > 0
-          ? prevSavedData.business.funFund + totalBusinessIncome * (allocationPercentages.business.funFund / 100)
-          : prevSavedData.business.funFund,
-        wealthFund: !isBusinessDataSaved && totalBusinessIncome > 0
-          ? prevSavedData.business.wealthFund + totalBusinessIncome * (allocationPercentages.business.wealthFund / 100)
-          : prevSavedData.business.wealthFund,
+        tithe: prevSavedData.business.tithe + newBusinessIncome * (allocationPercentages.business.tithe / 100),
+        expenses: prevSavedData.business.expenses + newBusinessIncome * (allocationPercentages.business.expenses / 100),
+        educationFund: prevSavedData.business.educationFund + newBusinessIncome * (allocationPercentages.business.educationFund / 100),
+        businessFund: prevSavedData.business.businessFund + newBusinessIncome * (allocationPercentages.business.businessFund / 100),
+        funFund: prevSavedData.business.funFund + newBusinessIncome * (allocationPercentages.business.funFund / 100),
+        wealthFund: prevSavedData.business.wealthFund + newBusinessIncome * (allocationPercentages.business.wealthFund / 100),
       },
       salary: {
-        tithes: !isSalaryDataSaved && totalSalaryIncome > 0
-          ? prevSavedData.salary.tithes + totalSalaryIncome * (allocationPercentages.salary.tithes / 100)
-          : prevSavedData.salary.tithes,
-        expenses: !isSalaryDataSaved && totalSalaryIncome > 0
-          ? prevSavedData.salary.expenses + totalSalaryIncome * (allocationPercentages.salary.expenses / 100)
-          : prevSavedData.salary.expenses,
-        saving: !isSalaryDataSaved && totalSalaryIncome > 0
-          ? prevSavedData.salary.saving + totalSalaryIncome * (allocationPercentages.salary.saving / 100)
-          : prevSavedData.salary.saving,
-        educationFund: !isSalaryDataSaved && totalSalaryIncome > 0
-          ? prevSavedData.salary.educationFund + totalSalaryIncome * (allocationPercentages.salary.educationFund / 100)
-          : prevSavedData.salary.educationFund,
-        funFund: !isSalaryDataSaved && totalSalaryIncome > 0
-          ? prevSavedData.salary.funFund + totalSalaryIncome * (allocationPercentages.salary.funFund / 100)
-          : prevSavedData.salary.funFund,
-        wealthFund: !isSalaryDataSaved && totalSalaryIncome > 0
-          ? prevSavedData.salary.wealthFund + totalSalaryIncome * (allocationPercentages.salary.wealthFund / 100)
-          : prevSavedData.salary.wealthFund,
+        tithes: prevSavedData.salary.tithes + newSalaryIncome * (allocationPercentages.salary.tithes / 100),
+        expenses: prevSavedData.salary.expenses + newSalaryIncome * (allocationPercentages.salary.expenses / 100),
+        saving: prevSavedData.salary.saving + newSalaryIncome * (allocationPercentages.salary.saving / 100),
+        educationFund: prevSavedData.salary.educationFund + newSalaryIncome * (allocationPercentages.salary.educationFund / 100),
+        funFund: prevSavedData.salary.funFund + newSalaryIncome * (allocationPercentages.salary.funFund / 100),
+        wealthFund: prevSavedData.salary.wealthFund + newSalaryIncome * (allocationPercentages.salary.wealthFund / 100),
       },
     }));
 
-    if (!isBusinessDataSaved && totalBusinessIncome > 0) {
-      setSavedTotalBusinessIncome((prev) => prev + totalBusinessIncome);
-      setIsBusinessDataSaved(true);
-    }
+    setSavedTotalBusinessIncome((prev) => prev + newBusinessIncome); // Add only the new business income
+    setSavedTotalSalaryIncome((prev) => prev + newSalaryIncome); // Add only the new salary income
 
-    if (!isSalaryDataSaved && totalSalaryIncome > 0) {
-      setSavedTotalSalaryIncome((prev) => prev + totalSalaryIncome);
-      setIsSalaryDataSaved(true);
-    }
+    setNewBusinessIncome(0); // Reset new business income
+    setNewSalaryIncome(0); // Reset new salary income
   };
 
   const addBusinessIncome = (income: number) => {
     setTotalBusinessIncome((prev) => prev + income);
+    setNewBusinessIncome((prev) => prev + income); // Track new business income
     setAllocationTotals((prevTotals) => ({
       ...prevTotals,
       business: {
@@ -150,6 +125,7 @@ export const IncomeProvider: React.FC<IncomeProviderProps> = ({ children }) => {
 
   const addSalaryIncome = (income: number) => {
     setTotalSalaryIncome((prev) => prev + income);
+    setNewSalaryIncome((prev) => prev + income); // Track new salary income
     setAllocationTotals((prevTotals) => ({
       ...prevTotals,
       salary: {
