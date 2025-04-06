@@ -120,12 +120,21 @@ const Index = () => {
   };
 
   const generatePDF = async () => {
+    // Get the current date
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+
     const htmlContent = `
       <html>
         <head>
           <style>
             body { font-family: Arial, sans-serif; padding: 20px; }
             h1 { text-align: center; color: #333; }
+            h3 { text-align: center; color: #666; }
             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
             th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
             th { background-color: #f4f4f4; }
@@ -133,6 +142,7 @@ const Index = () => {
         </head>
         <body>
           <h1>Saved Data Report</h1>
+          <h3>Report submitted on: ${formattedDate}</h3>
           <h2>Business Income</h2>
           <table>
             <tr><th>Category</th><th>Amount</th></tr>
