@@ -10,13 +10,13 @@ export const sharedStyles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ffffff', // White text color
+    color: '#d9d9d9', // Dark white text color for titles
     marginBottom: 20,
   },
   subHeader: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#b0b0b0', // Slightly lighter text color
+    color: '#ffffff', // White text color for sub-fonts
     marginBottom: 10,
   },
   input: {
@@ -39,11 +39,11 @@ export const sharedStyles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff', 
+    color: '#ffffff', // White text color for button text
   },
   total: {
     fontSize: 18,
-    color: '#ffffff', // White text color
+    color: '#ffffff', // White text color for totals
     marginVertical: 5,
   },
   collapsibleHeader: {
@@ -56,7 +56,7 @@ export const sharedStyles = StyleSheet.create({
   collapsibleHeaderText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff', // Black text color
+    color: '#ffffff', // White text color for collapsible headers
   },
   collapsibleContent: {
     padding: 13,
