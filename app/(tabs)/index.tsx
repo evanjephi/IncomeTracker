@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ScrollView, TouchableOpacity, FlatList, View, Dimensions, Alert } from 'react-native';
 import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { IncomeContext } from '../IncomeContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -160,8 +161,16 @@ const Index = () => {
     `;
 
     try {
+      // Generate the PDF
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
-      Alert.alert('PDF Generated', `PDF saved to: ${uri}`);
+
+      // Check if sharing is available
+      if (await Sharing.isAvailableAsync()) {
+        // Share the PDF file
+        await Sharing.shareAsync(uri);
+      } else {
+        Alert.alert('Sharing Not Available', 'Sharing is not available on this device.');
+      }
     } catch (error) {
       console.error('Error generating PDF:', error);
       Alert.alert('Error', 'Failed to generate PDF.');
@@ -312,7 +321,7 @@ const Index = () => {
           onPress={generatePDF}
           style={[sharedStyles.button, { backgroundColor: '#0075be' }]} // Blue color for PDF button
         >
-          <ThemedText style={[sharedStyles.buttonText]}>Generate PDF</ThemedText>
+          <ThemedText style={[sharedStyles.buttonText]}>Generate Report</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity
