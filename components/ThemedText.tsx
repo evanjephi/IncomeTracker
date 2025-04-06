@@ -37,24 +37,28 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     lineHeight: 24,
+    color: '#ffffff', // White text color for default text
   },
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
     fontWeight: '600',
+    color: '#ffffff', // White text color for semi-bold text
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     lineHeight: 32,
+    color: '#d9d9d9', // Dark white text color for titles
   },
   subtitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#ffffff', // White text color for subtitles
   },
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+    color: '#0a7ea4', // Cyan color for links
   },
 });
