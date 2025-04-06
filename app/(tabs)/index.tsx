@@ -153,6 +153,17 @@ const Index = () => {
             <tr><td>Fun Fund</td><td>${savedData.salary.funFund.toFixed(2)}</td></tr>
             <tr><td>Wealth Fund</td><td>${savedData.salary.wealthFund.toFixed(2)}</td></tr>
           </table>
+          <h2>Combined Saved Data</h2>
+          <table>
+            <tr><th>Category</th><th>Amount</th></tr>
+            <tr><td>Tithe</td><td>${combinedSavedAllocations.tithes.toFixed(2)}</td></tr>
+            <tr><td>Expenses</td><td>${combinedSavedAllocations.expenses.toFixed(2)}</td></tr>
+            <tr><td>Saving</td><td>${combinedSavedAllocations.saving.toFixed(2)}</td></tr>
+            <tr><td>Education Fund</td><td>${combinedSavedAllocations.educationFund.toFixed(2)}</td></tr>
+            <tr><td>Business Fund</td><td>${combinedSavedAllocations.businessFund.toFixed(2)}</td></tr>
+            <tr><td>Fun Fund</td><td>${combinedSavedAllocations.funFund.toFixed(2)}</td></tr>
+            <tr><td>Wealth Fund</td><td>${combinedSavedAllocations.wealthFund.toFixed(2)}</td></tr>
+          </table>
           <h2>Total Saved Income</h2>
           <p>Business Income: $${savedTotalBusinessIncome.toFixed(2)}</p>
           <p>Salary Income: $${savedTotalSalaryIncome.toFixed(2)}</p>
