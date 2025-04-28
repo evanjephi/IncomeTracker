@@ -93,7 +93,7 @@ const Index = () => {
   ];
 
   const renderPieChart = ({ item, index }: { item: { title: string; data: any }; index: number }) => (
-    <View
+    <ThemedView
       style={{
         width: Dimensions.get('window').width,
         paddingTop: 20,
@@ -101,7 +101,7 @@ const Index = () => {
     >
       <ThemedText style={[sharedStyles.subHeader]}>{item.title}</ThemedText>
       <SavedDataPieChart title={item.title} data={item.data} />
-    </View>
+    </ThemedView>
   );
 
   const handleResetSavedData = () => {
